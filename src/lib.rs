@@ -4,5 +4,12 @@ pub use errors::{Error, Exit, Result};
 pub mod dispatch;
 pub use dispatch::{ArgsDispatcher, ParserDispatcher, SubcommandDispatcher};
 
-pub(crate) mod mp3_organizer;
-pub use mp3_organizer::*;
+#[doc(hidden)] pub mod mp3;
+#[doc(inline)]
+pub use mp3::{
+    AlbumAndArtistMap,
+    is_mp3,
+    map_albums_and_artists,
+    process_mp3,
+    sanitize_folder_name,
+};

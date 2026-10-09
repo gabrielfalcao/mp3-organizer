@@ -8,6 +8,14 @@ pub enum Error {
     IOError(#[from] std::io::Error),
     #[error("I/O Error {0}")]
     IOCoreError(#[from] iocore::Error),
+    #[error("ID3 Error {0}")]
+    ID3Error(#[from] id3::Error),
+    #[error("Input Error {0}")]
+    InputError(String),
+    #[error("Logging Error {0}")]
+    LoggingError(#[from] log::SetLoggerError),
+    #[error("Logging Setup Error {0}")]
+    FernInitError(#[from] fern::InitError),
 
     #[error("Runtime Error {0}")]
     RuntimeError(String),
