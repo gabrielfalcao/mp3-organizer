@@ -1,0 +1,58 @@
+[package]
+name = "mp3-organizer"
+version = "0.0.1"
+description = "mp3-organizer command-line"
+readme = "README.md"
+homepage = "https://crates.io/crates/mp3-organizer"
+license = "MIT OR Apache-2.0"
+edition = "2024"
+autoexamples = false
+autobenches = false
+# default-run = "mp3-organizer"
+
+# categories = [] # https://crates.io/category_slugs
+
+
+[package.metadata]
+targets = [
+    # "aarch64-apple-darwin",
+    # "x86_64-unknown-linux-gnu",
+    # "aarch64-unknown-linux-gnu",
+]
+
+[profile.release] # https://github.com/johnthagen/min-sized-rust
+strip = true  # Automatically strip symbols from the binary.
+opt-level = "z"  # Optimize for size. https://doc.rust-lang.org/cargo/reference/profiles.html#opt-level
+lto = true
+panic = "abort"
+codegen-units = 1
+# https://github.com/johnthagen/min-sized-rust?tab=readme-ov-file#remove-fmtdebug
+
+
+
+[lib]
+name = "mp3_organizer"
+path = "src/lib.rs"
+
+doctest = false
+bench = false
+
+
+[[bin]]
+name = "mp3-organizer"
+path = "src/main.rs"
+doctest = false
+bench = false
+doc = false
+test = false
+
+[dependencies]
+clap = { version = "4.6.7", features = ["derive", "env", "string", "unicode", "wrap_help"] }
+id3 = "1.17.2"
+iocore = { version = "3.2.0", features = ["walk-glob"] }
+serde = { version = "1.0.229", features = ["derive"] }
+thiserror = "2.0.21"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+
