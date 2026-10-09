@@ -1,7 +1,22 @@
 use crate::{Result, Error};
+use std::collections::BTreeMap;
 use iocore::Path;
 use id3::{Tag, TagLike};
 
+
+#[derive(Clone, Debug, Default)]
+pub struct AlbumAndArtistMap {
+    pub albums: BTreeMap<String, Path>,
+    pub artists: BTreeMap<String, Path>,
+}
+
+pub fn map_albums_and_artists(search_target_dir: Path) -> Result<AlbumAndArtistMap> {
+    if !search_target_dir.is_dir() {
+        return Err(Error::InputError(format!("target dir must be an existing directory")))
+    }
+    let mut map = AlbumAndArtistMap::default();
+    // TODO: scan search_target_dir, extracting Artist and Album and filling the map
+}
 pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Define your source folder containing loose MP3 files
     let source_dir = Path::new("./music_inbox");
