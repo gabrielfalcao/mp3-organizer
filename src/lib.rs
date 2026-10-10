@@ -7,7 +7,6 @@ pub use dispatch::{ArgsDispatcher, ParserDispatcher, SubcommandDispatcher};
 #[doc(hidden)] pub mod mp3;
 #[doc(inline)]
 pub use mp3::{
-    AlbumAndArtistMap,
     is_mp3,
     map_albums_and_artists,
     process_mp3,

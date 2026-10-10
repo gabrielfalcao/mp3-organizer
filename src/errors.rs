@@ -16,6 +16,8 @@ pub enum Error {
     LoggingError(#[from] log::SetLoggerError),
     #[error("Logging Setup Error {0}")]
     FernInitError(#[from] fern::InitError),
+    #[error("Json Error {0}")]
+    JsonError(#[from] serde_json::Error),
 
     #[error("Runtime Error {0}")]
     RuntimeError(String),

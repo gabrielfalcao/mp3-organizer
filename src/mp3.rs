@@ -6,36 +6,28 @@ use serde::{Deserialize, Serialize};
 
 use crate::{Error, Result};
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
-pub struct AlbumAndArtistMap {
-    pub albums: BTreeMap<Path, String>,
-    pub artists: BTreeMap<Path, String>,
-}
-impl AlbumAndArtistMap {
-    pub fn extend(&mut self, other: &AlbumAndArtistMap) {
-        self.albums.extend(other.albums.clone());
-        self.artists.extend(other.artists.clone());
-    }
-}
-
 pub fn is_mp3(path: &Path) -> bool {
     path.extension().unwrap_or_default().ends_with("mp3")
 }
-pub fn map_albums_and_artists(search_target_dir: &Path) -> Result<AlbumAndArtistMap> {
+pub fn map_albums_and_artists(
+    search_target_dir: &Path,
+) -> Result<BTreeMap<Path, (String, String, String)>> {
     if !search_target_dir.is_dir() {
         return Err(Error::InputError(format!("target dir must be an existing directory")));
     }
-    let mut map = AlbumAndArtistMap::default();
+    let mut map = BTreeMap::<Path, (String, String, String)>::new();
+
     // TODO: scan search_target_dir, extracting Artist and Album and filling the map
     for path in search_target_dir.list()? {
         if path.is_dir() {
-            map.extend(&map_albums_and_artists(&path)?);
+            map.extend(map_albums_and_artists(&path)?);
         } else if path.is_file() {
             if is_mp3(&path) {
+                log::info!("found mp3 at {path}");
                 match process_mp3(&path)? {
-                    Some((artist, album)) => {
-                        map.artists.insert(path.clone(), artist.clone());
-                        map.albums.insert(path.clone(), album.clone());
+                    Some((artist, album, title)) => {
+                        log::info!("processing mp3 of {artist}/{album} {title}");
+                        map.insert(path.clone(), (artist.clone(), album.clone(), title.clone()));
                     }
                     None => {
                         eprintln!("ignoring untagged mp3 file: {path}");
@@ -50,13 +42,15 @@ pub fn map_albums_and_artists(search_target_dir: &Path) -> Result<AlbumAndArtist
     }
     Ok(map)
 }
-pub fn process_mp3(file_path: &Path) -> Result<Option<(String, String)>> {
+pub fn process_mp3(file_path: &Path) -> Result<Option<(String, String, String)>> {
     // Attempt to read ID3 tags from the MP3 file
     log::debug!("reading file {file_path}");
     let tag = Tag::read_from_path(file_path)?;
-    log::info!("processing mp3 file {file_path}");
-    match (tag.artist(), tag.album()) {
-        (Some(artist), Some(album)) => Ok(Some((artist.to_string(), album.to_string()))),
+    log::warn!("processing mp3 file {file_path}");
+    match (tag.artist(), tag.album(), tag.title()) {
+        (Some(artist), Some(album), Some(title)) => {
+            Ok(Some((artist.to_string(), album.to_string(), title.to_string())))
+        }
         _ => Ok(None),
     }
 }
