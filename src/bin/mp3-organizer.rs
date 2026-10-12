@@ -7,7 +7,6 @@ use mp3_organizer::{
     Error,
     Exit,
     Result,
-    UNKNOWN_ALBUM,
     UNKNOWN_ARTIST,
     UNKNOWN_TITLE,
     dispatch::ParserDispatcher,
@@ -32,7 +31,7 @@ impl ParserDispatcher<Error> for Cli {
         let source_path = self.source_path();
         let map = map_albums_and_artists(&source_path)?;
         println!("{source_path}");
-        for (path, ((artist, updated_artist), (album, updated_album), (title, updated_title))) in
+        for (path, ((artist, _updated_artist), (album, _updated_album), (title, _updated_title))) in
             &map
         {
             let target_dir = source_path.join(&artist).join(&album);
