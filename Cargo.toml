@@ -1,14 +1,20 @@
 [package]
 name = "mp3-organizer"
 version = "0.0.1"
-description = "mp3-organizer command-line"
+description = "Guesses the missing ID3 tags for artist, album and title from filename then moves properly tagged mp3 files into subfolders: <Artist>/<Album>/<Filename>"
 readme = "README.md"
 homepage = "https://crates.io/crates/mp3-organizer"
 license = "MIT OR Apache-2.0"
 edition = "2024"
 autoexamples = false
 autobenches = false
-# default-run = "mp3-organizer"
+documentation = "https://docs.rs/mp3-organizer"
+repository = "https://github.com/gabrielfalcao/mp3-organizer"
+
+keywords = ["mp3", "id3", "tagging", "music", "audio"]
+authors = ["Gabriel DeMoura <gabrielteratos@gmail.com>"]
+categories = ["command-line-interface", "multimedia::audio"]
+default-run = "mp3-organizer"
 
 # categories = [] # https://crates.io/category_slugs
 
