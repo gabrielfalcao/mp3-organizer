@@ -7,8 +7,12 @@ pub use dispatch::{ArgsDispatcher, ParserDispatcher, SubcommandDispatcher};
 #[doc(hidden)] pub mod mp3;
 #[doc(inline)]
 pub use mp3::{
+    UNKNOWN_ALBUM,
+    UNKNOWN_ARTIST,
+    UNKNOWN_TITLE,
     is_mp3,
     map_albums_and_artists,
     process_mp3,
     sanitize_folder_name,
+    scan_for_mp3_files,
 };
