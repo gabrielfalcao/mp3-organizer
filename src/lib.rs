@@ -16,3 +16,6 @@ pub use mp3::{
     sanitize_folder_name,
     scan_for_mp3_files,
 };
+
+#[doc(hidden)] pub mod config;
+#[doc(inline)] pub use config::{CONFIG_FILENAME, Config};

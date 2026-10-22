@@ -81,39 +81,52 @@ pub fn process_mp3(path: &Path) -> Result<((String, bool), (String, bool), (Stri
             .map(|v| v.trim().to_string())
             .collect::<Vec<String>>();
         if parts.len() >= 3 {
-            let artist = parts[0].clone();
-            let title = parts[1].clone();
-            let album = parts[2].clone();
-            tag.set_album(&album);
-            tag.set_title(&title);
-            tag.set_artist(&artist);
-            updated_artist = true;
-            updated_album = true;
-            updated_title = true;
-            log::info!("updated artist to: {artist:#?}");
-            log::info!("updated album to: {album:#?}");
-            log::info!("updated title to: {title:#?}");
-            tag.write_to_path(path, Version::Id3v24)?;
+            let artist = parts[0].trim().to_string();
+            let title = parts[1].trim().to_string();
+            let album = parts[2].trim().to_string();
+            if artist.len() > 0 || title.len() > 0 || album.len() > 0 {
+                tag.set_album(&album);
+                tag.set_title(&title);
+                tag.set_artist(&artist);
+                updated_artist = true;
+                updated_album = true;
+                updated_title = true;
+                log::info!("updated artist to: {artist:#?}");
+                log::info!("updated album to: {album:#?}");
+                log::info!("updated title to: {title:#?}");
+                tag.write_to_path(path, Version::Id3v24)?;
 
-            log::warn!(
-                "updated ID3 of file {path} with artist {artist:#?}, title {title:#?}, album {album:#?}"
-            );
+                log::warn!(
+                    "updated ID3 of file {path} with artist {artist:#?}, title {title:#?}, album {album:#?}"
+                );
+            } else if artist.is_empty() {
+                log::debug!("missing artist in {path}")
+            } else if album.is_empty() {
+                log::debug!("missing album in {path}")
+            } else if title.is_empty() {
+                log::debug!("missing title in {path}")
+            }
         } else if parts.len() == 2 {
-            let title = parts[0].clone();
-            let artist = parts[1].clone();
-            updated_artist = true;
-            updated_title = true;
-            log::info!("updated artist to: {artist:#?}");
-            log::info!("updated title to: {title:#?}");
-            log::info!("updated album to: {title:#?}");
-            tag.set_title(&title);
-            tag.set_artist(&artist);
-            tag.set_album(&artist);
-            tag.write_to_path(path, Version::Id3v24)?;
-
-            log::warn!(
-                "updated ID3 of file {path} with artist {artist:#?}, title {title:#?}, album {album:#?}"
-            );
+            let title = parts[0].trim().to_string();
+            let artist = parts[1].trim().to_string();
+            if artist.len() > 0 || title.len() > 0 || album.len() > 0 {
+                updated_artist = true;
+                updated_title = true;
+                log::info!("updated artist to: {artist:#?}");
+                log::info!("updated title to: {title:#?}");
+                log::info!("updated album to: {title:#?}");
+                tag.set_title(&title);
+                tag.set_artist(&artist);
+                tag.set_album(&artist);
+                tag.write_to_path(path, Version::Id3v24)?;
+                log::debug!(
+                    "updated ID3 of file {path} with artist {artist:#?}, title {title:#?}, album {album:#?}"
+                );
+            } else if artist.is_empty() {
+                log::debug!("missing artist in {path}")
+            } else if title.is_empty() {
+                log::debug!("missing title in {path}")
+            }
         }
     }
     Ok((((artist, updated_artist), (album, updated_album), (title, updated_title))))
