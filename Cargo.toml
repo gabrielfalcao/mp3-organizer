@@ -14,7 +14,7 @@ repository = "https://github.com/gabrielfalcao/mp3-organizer"
 keywords = ["mp3", "id3", "tagging", "music", "audio"]
 authors = ["Gabriel DeMoura <gabrielteratos@gmail.com>"]
 categories = ["command-line-interface", "multimedia::audio"]
-default-run = "mp3-organizer"
+default-run = "mp3"
 
 # categories = [] # https://crates.io/category_slugs
 

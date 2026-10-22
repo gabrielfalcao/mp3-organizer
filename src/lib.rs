@@ -19,3 +19,9 @@ pub use mp3::{
 
 #[doc(hidden)] pub mod config;
 #[doc(inline)] pub use config::{CONFIG_FILENAME, Config};
+
+#[doc(hidden)] pub mod cli;
+#[doc(inline)] pub use cli::{OrganizerCli, StampCli};
+
+#[doc(hidden)] pub mod logging;
+#[doc(inline)] pub use logging::setup_logger;
