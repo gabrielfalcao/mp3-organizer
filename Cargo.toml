@@ -51,6 +51,21 @@ doctest = false
 bench = false
 doc = false
 test = false
+[[bin]]
+name = "mp3-stamp"
+path = "src/bin/mp3-stamp.rs"
+doctest = false
+bench = false
+doc = false
+test = false
+
+[[bin]]
+name = "mp3"
+path = "src/bin/mp3.rs"
+doctest = false
+bench = false
+doc = false
+test = false
 
 [dependencies]
 chrono = { version = "0.4.45", features = ["serde"] }
