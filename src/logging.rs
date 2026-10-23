@@ -1,3 +1,4 @@
+use crate::Result;
 use fern::colors::{Color, ColoredLevelConfig};
 
 pub fn setup_logger(level: Option<log::LevelFilter>) -> Result<()> {
@@ -17,7 +18,7 @@ pub fn setup_logger(level: Option<log::LevelFilter>) -> Result<()> {
                 message
             ))
         })
-        .level(level.or(log::LevelFilter::Debug))
+        .level(level.or(Some(log::LevelFilter::Debug)).unwrap())
         .chain(std::io::stderr())
         // .chain(fern::log_file("mp3-organizer.log"))
         .apply()?;

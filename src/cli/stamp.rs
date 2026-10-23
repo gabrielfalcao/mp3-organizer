@@ -39,7 +39,7 @@ impl StampCli {
         self.mp3_files
             .clone()
             .into_iter()
-            .filter(|path| path.extension() == ".mp3")
+            .filter(|path| path.extension().unwrap_or_default() == ".mp3")
             .collect::<Vec<Path>>()
     }
     pub fn artist_name(&self) -> Result<String> {
@@ -54,10 +54,9 @@ impl StampCli {
 }
 impl ParserDispatcher<Error> for StampCli {
     fn dispatch(&mut self) -> Result<()> {
-        setup_logger()?;
         let artist = self.artist_name()?;
         for path in self.mp3_files() {
-            let mut tag = Tag::read_from_path(path).unwrap_or_else(|e| Tag::new());
+            let mut tag = Tag::read_from_path(&path).unwrap_or_else(|e| Tag::new());
             tag.set_album(&self.album_name);
             tag.set_artist(&artist);
             tag.write_to_path(&path, Version::Id3v24)?;

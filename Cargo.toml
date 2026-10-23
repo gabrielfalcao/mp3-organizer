@@ -1,7 +1,7 @@
 [package]
 name = "mp3-organizer"
 version = "0.0.1"
-description = "Guesses the missing ID3 tags for artist, album and title from filename then moves properly tagged mp3 files into subfolders: <Artist>/<Album>/<Filename>"
+description = "MP3 Toolset for command-line"
 readme = "README.md"
 homepage = "https://crates.io/crates/mp3-organizer"
 license = "MIT OR Apache-2.0"
@@ -72,7 +72,6 @@ chrono = { version = "0.4.45", features = ["serde"] }
 clap = { version = "4.6.7", features = ["derive", "env", "string", "unicode", "wrap_help"] }
 color-eyre = "0.6.5"
 crc = "3.4.0"
-dirs = "7.0.0"
 fern = { version = "0.7.1", features = ["colored", "chrono"] }
 id3 = "1.17.2"
 iocore = { version = "3.2.0", features = ["walk-glob"] }

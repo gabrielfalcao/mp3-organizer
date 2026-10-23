@@ -14,7 +14,13 @@ pub const CONFIG_FILENAME: &'static str = "mp3_stamp.toml";
 
 impl Config {
     pub fn default_config_dir() -> Path {
-        dirs::config_dir().map(Path::from).unwrap()
+        let mut path = Path::new("~");
+        path = path.join(".config");
+        if !path.exists() {
+            path.mkdir().expect(&format!("failed to create directory {path:#?}", path=path.to_string()));
+        }
+        path
+
     }
     pub fn default_path() -> Path {
         Self::default_config_dir().join(CONFIG_FILENAME)

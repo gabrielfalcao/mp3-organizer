@@ -1,14 +1,15 @@
+#![allow(unused)]
 use clap::{Parser, Subcommand};
-use tmptestdeleteme::{
+use mp3_organizer::{
     Error,
     Exit,
     Result,
-    cli::{OrganizeCli, StampCli},
+    cli::{OrganizerCli, StampCli},
     dispatch::{ArgsDispatcher, ParserDispatcher, SubcommandDispatcher},
 };
 
 #[derive(Parser, Debug, Clone)]
-#[command(author, version, about, long_about = "tmptestdeleteme command-line")]
+#[command(author, version, about, long_about = "mp3 tools command-line")]
 pub struct Cli {
     #[command(subcommand)]
     command: TopLevelCommand,
@@ -29,7 +30,9 @@ impl ParserDispatcher<Error> for Cli {
 
 #[derive(Subcommand, Debug, Clone)]
 pub enum TopLevelCommand {
-    Organize(OrganizeOpt),
+    /// Guesses the missing ID3 tags for artist, album and title from filename then moves properly tagged mp3 files into subfolders: <Artist>/<Album>/<Filename>
+    Organize(OrganizerCli),
+    /// Writes Artist name configured in ~/.config/mp3.toml and optionally an album name and track name
     Stamp(StampCli),
 }
 impl SubcommandDispatcher<Error> for TopLevelCommand {
@@ -40,4 +43,8 @@ impl SubcommandDispatcher<Error> for TopLevelCommand {
         }
         Ok(())
     }
+}
+
+fn main() -> Exit {
+    Cli::main()
 }
