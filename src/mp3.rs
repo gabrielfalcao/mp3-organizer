@@ -27,13 +27,11 @@ pub fn scan_for_mp3_files(search_target_dir: &Path) -> Result<Vec<Path>> {
         } else if path.is_file() {
             log::info!("checking file {:#?}", path.to_string());
             if is_mp3(&path) {
-                // log::info!("found mp3 file: {path}");
+                log::info!("found mp3 file: {path}");
                 result.push(path);
-                // } else {
-                //     log::debug!("skipping non-mp3 file: {path}");
+            } else {
+                log::warn!("skipping non-mp3 file: {path}");
             }
-            // } else {
-            //     log::debug!("ignoring untagged mp3 file: {path}");
         }
     }
     Ok(result)
