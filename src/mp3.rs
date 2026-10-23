@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 
 use id3::{Tag, TagLike, Version};
 use iocore::Path;
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 
 use crate::{Error, Result};
@@ -13,6 +14,11 @@ pub const UNKNOWN_TITLE: &'static str = "Unknown Title";
 pub fn is_mp3(path: &Path) -> bool {
     path.extension().unwrap_or_default().ends_with("mp3")
 }
+pub fn cleanup_rename_mp3_filename(path: &Path) -> Result<Path> {
+    let regex = Regex::new(r"\s+[[][a-zA-Z0-9-]+[]]\s*")?;
+    let new_path = Path::new(regex.replace_all(path.to_string(), ""));
+    Ok(path.rename(&new_path)?)
+}
 pub fn scan_for_mp3_files(search_target_dir: &Path) -> Result<Vec<Path>> {
     if !search_target_dir.is_dir() {
         return Err(Error::InputError(format!("target dir must be an existing directory")));
@@ -21,6 +27,7 @@ pub fn scan_for_mp3_files(search_target_dir: &Path) -> Result<Vec<Path>> {
     log::info!("scanning path {:#?}", search_target_dir.to_string());
     // TODO: scan search_target_dir, extracting Artist and Album and filling the map
     for path in search_target_dir.list()? {
+        let path = cleanup_rename_mp3_filename(&path)?;
         if path.is_dir() {
             log::info!("scanning subdir {:#?}", path.to_string());
             result.extend(scan_for_mp3_files(&path)?);
@@ -32,6 +39,8 @@ pub fn scan_for_mp3_files(search_target_dir: &Path) -> Result<Vec<Path>> {
             } else {
                 log::warn!("skipping non-mp3 file: {path}");
             }
+        } else {
+            log::warn!("ignoring untagged mp3 file: {path}");
         }
     }
     Ok(result)
