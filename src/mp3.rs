@@ -16,8 +16,8 @@ pub fn is_mp3(path: &Path) -> bool {
 }
 pub fn cleanup_rename_mp3_filename(path: &Path) -> Result<Path> {
     let regex = Regex::new(r"\s+[[][a-zA-Z0-9-]+[]]\s*")?;
-    let new_path = Path::new(regex.replace_all(path.to_string(), ""));
-    Ok(path.rename(&new_path)?)
+    let new_path = Path::new(&regex.replace_all(&path.to_string(), ""));
+    Ok(path.rename(&new_path, true)?)
 }
 pub fn scan_for_mp3_files(search_target_dir: &Path) -> Result<Vec<Path>> {
     if !search_target_dir.is_dir() {
