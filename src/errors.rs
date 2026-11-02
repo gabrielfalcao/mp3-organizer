@@ -18,6 +18,8 @@ pub enum Error {
     FernInitError(#[from] fern::InitError),
     #[error("Json Error {0}")]
     JsonError(#[from] serde_json::Error),
+    #[error("Regex Error {0}")]
+    REGEXError(#[from] regex::Error),
 
     #[error("Runtime Error {0}")]
     RuntimeError(String),

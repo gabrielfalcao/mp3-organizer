@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 
 use id3::{Tag, TagLike, Version};
 use iocore::Path;
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 
 use crate::{Error, Result};
@@ -13,6 +14,11 @@ pub const UNKNOWN_TITLE: &'static str = "Unknown Title";
 pub fn is_mp3(path: &Path) -> bool {
     path.extension().unwrap_or_default().ends_with("mp3")
 }
+pub fn cleanup_rename_mp3_filename(path: &Path) -> Result<Path> {
+    let regex = Regex::new(r"\s+[[][a-zA-Z0-9-]+[]]\s*")?;
+    let new_path = Path::new(&regex.replace_all(&path.to_string(), ""));
+    Ok(path.rename(&new_path, true)?)
+}
 pub fn scan_for_mp3_files(search_target_dir: &Path) -> Result<Vec<Path>> {
     if !search_target_dir.is_dir() {
         return Err(Error::InputError(format!("target dir must be an existing directory")));
@@ -21,19 +27,20 @@ pub fn scan_for_mp3_files(search_target_dir: &Path) -> Result<Vec<Path>> {
     log::info!("scanning path {:#?}", search_target_dir.to_string());
     // TODO: scan search_target_dir, extracting Artist and Album and filling the map
     for path in search_target_dir.list()? {
+        let path = cleanup_rename_mp3_filename(&path)?;
         if path.is_dir() {
             log::info!("scanning subdir {:#?}", path.to_string());
             result.extend(scan_for_mp3_files(&path)?);
         } else if path.is_file() {
             log::info!("checking file {:#?}", path.to_string());
             if is_mp3(&path) {
-                // log::info!("found mp3 file: {path}");
+                log::info!("found mp3 file: {path}");
                 result.push(path);
-                // } else {
-                //     log::debug!("skipping non-mp3 file: {path}");
+            } else {
+                log::warn!("skipping non-mp3 file: {path}");
             }
-            // } else {
-            //     log::debug!("ignoring untagged mp3 file: {path}");
+        } else {
+            log::warn!("ignoring untagged mp3 file: {path}");
         }
     }
     Ok(result)
@@ -62,6 +69,23 @@ pub fn map_albums_and_artists(
     }
     Ok(map)
 }
+pub fn is_untagged(path: &Path) -> Result<bool> {
+    // Attempt to read ID3 tags from the MP3 file
+    log::debug!("reading file {path}");
+    let mut tag = Tag::read_from_path(path).unwrap_or_else(|e| Tag::new());
+    log::warn!("processing mp3 file {path}");
+    let artist = tag.artist().map(|t| t.to_string()).unwrap_or_else(|| UNKNOWN_ARTIST.to_string());
+    let album = tag.album().map(|t| t.to_string()).unwrap_or_else(|| UNKNOWN_ALBUM.to_string());
+    let title = tag.title().map(|t| t.to_string()).unwrap_or_else(|| UNKNOWN_TITLE.to_string());
+    let mut updated_artist = false;
+    let mut updated_album = false;
+    let mut updated_title = false;
+    if artist == UNKNOWN_ARTIST && album == UNKNOWN_ALBUM && title == UNKNOWN_TITLE {
+        return Ok(true);
+    } else {
+        return Ok(false);
+    }
+}
 pub fn process_mp3(path: &Path) -> Result<((String, bool), (String, bool), (String, bool))> {
     // Attempt to read ID3 tags from the MP3 file
     log::debug!("reading file {path}");
@@ -81,39 +105,52 @@ pub fn process_mp3(path: &Path) -> Result<((String, bool), (String, bool), (Stri
             .map(|v| v.trim().to_string())
             .collect::<Vec<String>>();
         if parts.len() >= 3 {
-            let artist = parts[0].clone();
-            let title = parts[1].clone();
-            let album = parts[2].clone();
-            tag.set_album(&album);
-            tag.set_title(&title);
-            tag.set_artist(&artist);
-            updated_artist = true;
-            updated_album = true;
-            updated_title = true;
-            log::info!("updated artist to: {artist:#?}");
-            log::info!("updated album to: {album:#?}");
-            log::info!("updated title to: {title:#?}");
-            tag.write_to_path(path, Version::Id3v24)?;
+            let artist = parts[0].trim().to_string();
+            let title = parts[1].trim().to_string();
+            let album = parts[2].trim().to_string();
+            if artist.len() > 0 || title.len() > 0 || album.len() > 0 {
+                tag.set_album(&album);
+                tag.set_title(&title);
+                tag.set_artist(&artist);
+                updated_artist = true;
+                updated_album = true;
+                updated_title = true;
+                log::info!("updated artist to: {artist:#?}");
+                log::info!("updated album to: {album:#?}");
+                log::info!("updated title to: {title:#?}");
+                tag.write_to_path(path, Version::Id3v24)?;
 
-            log::warn!(
-                "updated ID3 of file {path} with artist {artist:#?}, title {title:#?}, album {album:#?}"
-            );
+                log::warn!(
+                    "updated ID3 of file {path} with artist {artist:#?}, title {title:#?}, album {album:#?}"
+                );
+            } else if artist.is_empty() {
+                log::debug!("missing artist in {path}")
+            } else if album.is_empty() {
+                log::debug!("missing album in {path}")
+            } else if title.is_empty() {
+                log::debug!("missing title in {path}")
+            }
         } else if parts.len() == 2 {
-            let title = parts[0].clone();
-            let artist = parts[1].clone();
-            updated_artist = true;
-            updated_title = true;
-            log::info!("updated artist to: {artist:#?}");
-            log::info!("updated title to: {title:#?}");
-            log::info!("updated album to: {title:#?}");
-            tag.set_title(&title);
-            tag.set_artist(&artist);
-            tag.set_album(&artist);
-            tag.write_to_path(path, Version::Id3v24)?;
-
-            log::warn!(
-                "updated ID3 of file {path} with artist {artist:#?}, title {title:#?}, album {album:#?}"
-            );
+            let title = parts[0].trim().to_string();
+            let artist = parts[1].trim().to_string();
+            if artist.len() > 0 || title.len() > 0 || album.len() > 0 {
+                updated_artist = true;
+                updated_title = true;
+                log::info!("updated artist to: {artist:#?}");
+                log::info!("updated title to: {title:#?}");
+                log::info!("updated album to: {title:#?}");
+                tag.set_title(&title);
+                tag.set_artist(&artist);
+                tag.set_album(&artist);
+                tag.write_to_path(path, Version::Id3v24)?;
+                log::debug!(
+                    "updated ID3 of file {path} with artist {artist:#?}, title {title:#?}, album {album:#?}"
+                );
+            } else if artist.is_empty() {
+                log::debug!("missing artist in {path}")
+            } else if title.is_empty() {
+                log::debug!("missing title in {path}")
+            }
         }
     }
     Ok((((artist, updated_artist), (album, updated_album), (title, updated_title))))

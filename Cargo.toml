@@ -1,7 +1,7 @@
 [package]
 name = "mp3-organizer"
 version = "0.0.1"
-description = "Guesses the missing ID3 tags for artist, album and title from filename then moves properly tagged mp3 files into subfolders: <Artist>/<Album>/<Filename>"
+description = "MP3 Toolset for command-line"
 readme = "README.md"
 homepage = "https://crates.io/crates/mp3-organizer"
 license = "MIT OR Apache-2.0"
@@ -14,7 +14,7 @@ repository = "https://github.com/gabrielfalcao/mp3-organizer"
 keywords = ["mp3", "id3", "tagging", "music", "audio"]
 authors = ["Gabriel DeMoura <gabrielteratos@gmail.com>"]
 categories = ["command-line-interface", "multimedia::audio"]
-default-run = "mp3-organizer"
+default-run = "mp3"
 
 # categories = [] # https://crates.io/category_slugs
 
@@ -51,8 +51,38 @@ doctest = false
 bench = false
 doc = false
 test = false
+[[bin]]
+name = "mp3-find-untagged"
+path = "src/bin/mp3-find-untagged.rs"
+doctest = false
+bench = false
+doc = false
+test = false
+[[bin]]
+name = "mp3-dedup"
+path = "src/bin/mp3-dedup.rs"
+doctest = false
+bench = false
+doc = false
+test = false
+[[bin]]
+name = "mp3-stamp"
+path = "src/bin/mp3-stamp.rs"
+doctest = false
+bench = false
+doc = false
+test = false
+
+[[bin]]
+name = "mp3"
+path = "src/bin/mp3.rs"
+doctest = false
+bench = false
+doc = false
+test = false
 
 [dependencies]
+audiofp = "0.4.5"
 chrono = { version = "0.4.45", features = ["serde"] }
 clap = { version = "4.6.7", features = ["derive", "env", "string", "unicode", "wrap_help"] }
 color-eyre = "0.6.5"
@@ -61,11 +91,13 @@ fern = { version = "0.7.1", features = ["colored", "chrono"] }
 id3 = "1.17.2"
 iocore = { version = "3.2.0", features = ["walk-glob"] }
 log = "0.4.34"
+regex = "1.13.1"
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
 sha3 = "0.12.0"
 thiserror = "2.0.21"
 tokio = { version = "1.53.2", features = ["full"] }
+toml = "1.1.8"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
