@@ -23,6 +23,6 @@ though.
 
 I've been having much more success passing MP3 files through the following tools subsequently:
 
-1. OneTagger: which uses Shazam to try and ID music, it fails sometimes but the next tool usually catches anything missing.
+1. OneTagger ([https://onetagger.github.io/](https://onetagger.github.io/)): which uses Shazam to try and ID music, it fails sometimes but the next tool usually catches anything missing.
 2. Picard by Musicbrainz ([https://picard.musicbrainz.org/](https://picard.musicbrainz.org/))
 3. Dupsonic ([https://crates.io/crates/dupsonic](https://crates.io/crates/dupsonic)): deduplicates MP3 files by actually analyzing the audio
