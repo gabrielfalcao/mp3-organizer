@@ -52,6 +52,20 @@ bench = false
 doc = false
 test = false
 [[bin]]
+name = "mp3-find-untagged"
+path = "src/bin/mp3-find-untagged.rs"
+doctest = false
+bench = false
+doc = false
+test = false
+[[bin]]
+name = "mp3-dedup"
+path = "src/bin/mp3-dedup.rs"
+doctest = false
+bench = false
+doc = false
+test = false
+[[bin]]
 name = "mp3-stamp"
 path = "src/bin/mp3-stamp.rs"
 doctest = false
@@ -68,6 +82,7 @@ doc = false
 test = false
 
 [dependencies]
+audiofp = "0.4.5"
 chrono = { version = "0.4.45", features = ["serde"] }
 clap = { version = "4.6.7", features = ["derive", "env", "string", "unicode", "wrap_help"] }
 color-eyre = "0.6.5"

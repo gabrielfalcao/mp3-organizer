@@ -69,6 +69,23 @@ pub fn map_albums_and_artists(
     }
     Ok(map)
 }
+pub fn is_untagged(path: &Path) -> Result<bool> {
+    // Attempt to read ID3 tags from the MP3 file
+    log::debug!("reading file {path}");
+    let mut tag = Tag::read_from_path(path).unwrap_or_else(|e| Tag::new());
+    log::warn!("processing mp3 file {path}");
+    let artist = tag.artist().map(|t| t.to_string()).unwrap_or_else(|| UNKNOWN_ARTIST.to_string());
+    let album = tag.album().map(|t| t.to_string()).unwrap_or_else(|| UNKNOWN_ALBUM.to_string());
+    let title = tag.title().map(|t| t.to_string()).unwrap_or_else(|| UNKNOWN_TITLE.to_string());
+    let mut updated_artist = false;
+    let mut updated_album = false;
+    let mut updated_title = false;
+    if artist == UNKNOWN_ARTIST && album == UNKNOWN_ALBUM && title == UNKNOWN_TITLE {
+        return Ok(true);
+    } else {
+        return Ok(false);
+    }
+}
 pub fn process_mp3(path: &Path) -> Result<((String, bool), (String, bool), (String, bool))> {
     // Attempt to read ID3 tags from the MP3 file
     log::debug!("reading file {path}");
